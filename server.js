@@ -1,8 +1,10 @@
 import * as dotenv from 'dotenv';
-dotenv.config()
+dotenv.config();
 
 import express from 'express';
 import cors from 'cors';
+import { dbConnection } from "./config/conn"
+
 
 const app = express();
 app.use(cors());
@@ -13,5 +15,6 @@ app.get('/', (req, res) => {
 })
 
 app.listen(PORT, () => {
+    dbConnection();
     console.log(`Example app listening on port ${PORT}`)
 })
