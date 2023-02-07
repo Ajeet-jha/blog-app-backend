@@ -4,19 +4,16 @@ import express from 'express';
 import cors from 'cors';
 import { dbConnection } from './config/conn';
 
+import { router } from './routes/userRouters';
+
 dotenv.config();
 
 const app = express();
 app.use(cors());
 const PORT = process.env.PORT || 3000;
 
-app.get('/', (req, res) => {
-	res.send('Hello World!!!!');
-});
-
-app.get('/test', (req, res) => {
-	res.send({ message: 'test page', status: 200 });
-});
+app.use(express.json());
+app.use('/v1', router);
 
 app.listen(PORT, () => {
 	dbConnection();

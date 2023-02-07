@@ -11,6 +11,10 @@
         "sourceType": "module"
     },
     "rules": {
-        "import/prefer-default-export": "warn"
+        "import/prefer-default-export": "warn",
+        "no-console": "off",
+        "no-underscore-dangle": 0,
+        "no-param-reassign": [2, { "props": false }],
+        "consistent-return": "off"
     }
 }
