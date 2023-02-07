@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "webpack",
+    "build": "rm -rf dist && webpack",
     "start": "nodemon dist/bundle.js",
     "prepare": "husky install"
   },
@@ -32,7 +32,8 @@
     "husky": "^8.0.3",
     "lint-staged": "^13.1.0",
     "nodemon": "^2.0.20",
-    "prettier": "2.8.3"
+    "prettier": "2.8.3",
+    "webpack-node-externals": "^3.0.0"
   },
   "lint-staged": {
     "*.js": "eslint --cache --fix",
