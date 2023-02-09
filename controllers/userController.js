@@ -1,6 +1,11 @@
+import * as dotenv from 'dotenv';
 import * as fs from 'fs';
 import * as path from 'path';
+import bcrypt from 'bcryptjs';
+
 import { RegistrationModel as User } from '../model/AuthModel/Registration';
+
+dotenv.config();
 
 export const registerUser = async (req, res) => {
 	const { firstname, lastname, phone, email, password } = req.body;
@@ -11,13 +16,18 @@ export const registerUser = async (req, res) => {
 		),
 		contentType: 'image/png',
 	};
+
+	const salt = bcrypt.genSaltSync(10);
+	const hash = bcrypt.hashSync(password, salt);
+	// const resp = bcrypt.compareSync(password, hash);
+
 	try {
 		const user = await User.create({
 			firstname,
 			lastname,
 			phone,
 			email,
-			password,
+			password: hash,
 			image,
 		});
 		res.status(201).send({
