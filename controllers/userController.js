@@ -1,23 +1,33 @@
+import * as dotenv from 'dotenv';
 import * as fs from 'fs';
 import * as path from 'path';
-import { UserModel as User } from '../model/UserSchema';
+import bcrypt from 'bcryptjs';
+
+import { RegistrationModel as User } from '../model/AuthModel/Registration';
+
+dotenv.config();
 
 export const registerUser = async (req, res) => {
 	const { firstname, lastname, phone, email, password } = req.body;
 
 	const image = {
 		data: fs.readFileSync(
-			path.join(`${__dirname  }/uploads/${  req.file.filename}`)
+			path.join(`${__dirname}/uploads/${req.file.filename}`)
 		),
 		contentType: 'image/png',
 	};
+
+	const salt = bcrypt.genSaltSync(10);
+	const hash = bcrypt.hashSync(password, salt);
+	// const resp = bcrypt.compareSync(password, hash);
+
 	try {
 		const user = await User.create({
 			firstname,
 			lastname,
 			phone,
 			email,
-			password,
+			password: hash,
 			image,
 		});
 		res.status(201).send({
@@ -34,5 +44,30 @@ export const registerUser = async (req, res) => {
 			});
 		}
 		return res.status(422).send(error);
+	}
+};
+
+export const getUsers = async (req, res) => {
+	try {
+		const users = await User.find({});
+		const allUsers = [];
+		users.forEach((user) => {
+			allUsers.push({
+				firstname: user.firstname,
+				lastname: user.lastname,
+				phone: user.phone,
+				email: user.email,
+				image: user.image.data,
+				id: user.id,
+			});
+		});
+
+		res.status(200).send({
+			data: allUsers,
+			succes: true,
+		});
+	} catch (error) {
+		const { name, code } = error;
+		return res.status(422).send({ name, code });
 	}
 };
