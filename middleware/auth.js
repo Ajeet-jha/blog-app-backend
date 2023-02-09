@@ -10,7 +10,6 @@ export const isAuthenticated = (req, res, next) => {
 		}
 		[, token] = token.split(' ');
 		const decoded = jwt.verify(token, ACCESS_SECRET);
-		console.log(decoded);
 		req.email = decoded.email;
 		next();
 	} catch (error) {
