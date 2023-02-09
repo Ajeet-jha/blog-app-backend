@@ -30,20 +30,12 @@ export const registerUser = async (req, res) => {
 			password: hash,
 			image,
 		});
-		const accessToken = jwt.sign(
-			{ email, role: 'Admin' },
-			ACCESS_SECRET,
-			{
-				expiresIn: '2m',
-			}
-		);
-		const refreshToken = jwt.sign(
-			{ email, role: 'Admin' },
-			REFRESH_SECRECT,
-			{
-				expiresIn: '10m',
-			}
-		);
+		const accessToken = jwt.sign({ email, role: 'Admin' }, ACCESS_SECRET, {
+			expiresIn: '2m',
+		});
+		const refreshToken = jwt.sign({ email, role: 'Admin' }, REFRESH_SECRECT, {
+			expiresIn: '10m',
+		});
 		res.status(201).send({
 			message: 'User created !!',
 			data: {
@@ -109,20 +101,12 @@ export const signInUser = async (req, res) => {
 				message: `Users ${email} and ${password} mismatch !!`,
 			});
 		}
-		const accessToken = jwt.sign(
-			{ email, role: 'Admin' },
-			ACCESS_SECRET,
-			{
-				expiresIn: '2m',
-			}
-		);
-		const refreshToken = jwt.sign(
-			{ email, role: 'Admin' },
-			REFRESH_SECRECT,
-			{
-				expiresIn: '10m',
-			}
-		);
+		const accessToken = jwt.sign({ email, role: 'Admin' }, ACCESS_SECRET, {
+			expiresIn: '5m',
+		});
+		const refreshToken = jwt.sign({ email, role: 'Admin' }, REFRESH_SECRECT, {
+			expiresIn: '10m',
+		});
 		res.status(200).send({
 			message: 'Login successful !!',
 			data: {

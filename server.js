@@ -4,7 +4,8 @@ import cors from 'cors';
 import jwt from 'jsonwebtoken';
 import { dbConnection } from './config/conn';
 
-import { router } from './routes/userRouters';
+import { router as userRouter } from './routes/userRouters';
+import { router as blogRouter } from './routes/blogRouters';
 import { isAuthenticated, verifyRefresh } from './middleware/auth';
 
 dotenv.config();
@@ -14,7 +15,8 @@ app.use(cors());
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
-app.use('/v1', router);
+app.use('/v1', userRouter);
+app.use('/v1', blogRouter);
 app.get('/protected', isAuthenticated, (req, res) => {
 	res.json({
 		success: true,
