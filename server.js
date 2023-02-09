@@ -30,11 +30,16 @@ app.post('/refresh', (req, res) => {
 			.status(401)
 			.json({ success: false, error: 'Invalid token,try login again' });
 	}
-	const accessToken = jwt.sign({ email }, 'accessSecret', {
-		expiresIn: '2m',
-	});
+	const accessToken = jwt.sign(
+		{ email, role: 'Admin' },
+		process.env.ACCESS_SECRET,
+		{
+			expiresIn: '2m',
+		}
+	);
 	return res.status(200).json({ success: true, accessToken });
 });
+
 app.listen(PORT, () => {
 	dbConnection();
 	console.log(`Example app listening on port ${PORT}`);
