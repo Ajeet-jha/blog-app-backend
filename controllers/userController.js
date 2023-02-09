@@ -1,8 +1,11 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 import { RegistrationModel as User } from '../model/AuthModel/Registration';
+
+const { ACCESS_SECRET, REFRESH_SECRECT } = process.env;
 
 export const registerUser = async (req, res) => {
 	const { firstname, lastname, phone, email, password } = req.body;
@@ -27,8 +30,26 @@ export const registerUser = async (req, res) => {
 			password: hash,
 			image,
 		});
+		const accessToken = jwt.sign(
+			{ email, role: 'Admin' },
+			ACCESS_SECRET,
+			{
+				expiresIn: '2m',
+			}
+		);
+		const refreshToken = jwt.sign(
+			{ email, role: 'Admin' },
+			REFRESH_SECRECT,
+			{
+				expiresIn: '10m',
+			}
+		);
 		res.status(201).send({
 			message: 'User created !!',
+			data: {
+				accessToken,
+				refreshToken,
+			},
 			succes: true,
 		});
 	} catch (error) {
@@ -81,17 +102,35 @@ export const signInUser = async (req, res) => {
 				succes: false,
 				message: `Users ${email} is not in our DB !!`,
 			});
-		} if (!bcrypt.compareSync(password, user.password)) {
+		}
+		if (!bcrypt.compareSync(password, user.password)) {
 			return res.status(422).send({
 				succes: false,
 				message: `Users ${email} and ${password} mismatch !!`,
 			});
-		} 
-			res.status(200).send({
-				data: 'Login successful !!',
-				succes: true,
-			});
-		
+		}
+		const accessToken = jwt.sign(
+			{ email, role: 'Admin' },
+			ACCESS_SECRET,
+			{
+				expiresIn: '2m',
+			}
+		);
+		const refreshToken = jwt.sign(
+			{ email, role: 'Admin' },
+			REFRESH_SECRECT,
+			{
+				expiresIn: '10m',
+			}
+		);
+		res.status(200).send({
+			message: 'Login successful !!',
+			data: {
+				accessToken,
+				refreshToken,
+			},
+			succes: true,
+		});
 	} catch (error) {
 		return res.status(422).send({
 			succes: false,
