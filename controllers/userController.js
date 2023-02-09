@@ -1,11 +1,8 @@
-import * as dotenv from 'dotenv';
 import * as fs from 'fs';
 import * as path from 'path';
 import bcrypt from 'bcryptjs';
 
 import { RegistrationModel as User } from '../model/AuthModel/Registration';
-
-dotenv.config();
 
 export const registerUser = async (req, res) => {
 	const { firstname, lastname, phone, email, password } = req.body;
@@ -22,7 +19,7 @@ export const registerUser = async (req, res) => {
 	// const resp = bcrypt.compareSync(password, hash);
 
 	try {
-		const user = await User.create({
+		await User.create({
 			firstname,
 			lastname,
 			phone,
@@ -31,7 +28,7 @@ export const registerUser = async (req, res) => {
 			image,
 		});
 		res.status(201).send({
-			data: user,
+			message: 'User created !!',
 			succes: true,
 		});
 	} catch (error) {
@@ -69,5 +66,36 @@ export const getUsers = async (req, res) => {
 	} catch (error) {
 		const { name, code } = error;
 		return res.status(422).send({ name, code });
+	}
+};
+
+export const signInUser = async (req, res) => {
+	const { email, password } = req.body;
+	try {
+		const user = await User.findOne(
+			{ email },
+			{ email: 1, password: 1, firstname: 1 }
+		);
+		if (!user) {
+			return res.status(422).send({
+				succes: false,
+				message: `Users ${email} is not in our DB !!`,
+			});
+		} if (!bcrypt.compareSync(password, user.password)) {
+			return res.status(422).send({
+				succes: false,
+				message: `Users ${email} and ${password} mismatch !!`,
+			});
+		} 
+			res.status(200).send({
+				data: 'Login successful !!',
+				succes: true,
+			});
+		
+	} catch (error) {
+		return res.status(422).send({
+			succes: false,
+			message: error,
+		});
 	}
 };
