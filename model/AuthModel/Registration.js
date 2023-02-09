@@ -24,6 +24,7 @@ const RegistrationSchema = new Schema(
 		password: {
 			type: String,
 			require: true,
+			select: false,
 		},
 		image: {
 			data: Buffer,
