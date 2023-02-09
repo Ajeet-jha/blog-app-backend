@@ -22,7 +22,7 @@ export const registerUser = async (req, res) => {
 	// const resp = bcrypt.compareSync(password, hash);
 
 	try {
-		await User.create({
+		const { _id: id } = await User.create({
 			firstname,
 			lastname,
 			phone,
@@ -30,10 +30,10 @@ export const registerUser = async (req, res) => {
 			password: hash,
 			image,
 		});
-		const accessToken = jwt.sign({ email, role: 'Admin' }, ACCESS_SECRET, {
+		const accessToken = jwt.sign({ email, id }, ACCESS_SECRET, {
 			expiresIn: '2m',
 		});
-		const refreshToken = jwt.sign({ email, role: 'Admin' }, REFRESH_SECRECT, {
+		const refreshToken = jwt.sign({ email, id }, REFRESH_SECRECT, {
 			expiresIn: '10m',
 		});
 		res.status(201).send({
@@ -87,8 +87,9 @@ export const signInUser = async (req, res) => {
 	try {
 		const user = await User.findOne(
 			{ email },
-			{ email: 1, password: 1, firstname: 1 }
+			{ _id: 1, password: 1, firstname: 1 }
 		);
+
 		if (!user) {
 			return res.status(422).send({
 				succes: false,
@@ -101,10 +102,11 @@ export const signInUser = async (req, res) => {
 				message: `Users ${email} and ${password} mismatch !!`,
 			});
 		}
-		const accessToken = jwt.sign({ email, role: 'Admin' }, ACCESS_SECRET, {
+
+		const accessToken = jwt.sign({ email, id: user._id }, ACCESS_SECRET, {
 			expiresIn: '5m',
 		});
-		const refreshToken = jwt.sign({ email, role: 'Admin' }, REFRESH_SECRECT, {
+		const refreshToken = jwt.sign({ email, id: user._id }, REFRESH_SECRECT, {
 			expiresIn: '10m',
 		});
 		res.status(200).send({
@@ -116,6 +118,7 @@ export const signInUser = async (req, res) => {
 			succes: true,
 		});
 	} catch (error) {
+		console.log(error);
 		return res.status(422).send({
 			succes: false,
 			message: error,

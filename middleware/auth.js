@@ -11,7 +11,7 @@ export const isAuthenticated = (req, res, next) => {
 		[, token] = token.split(' ');
 		const decoded = jwt.verify(token, ACCESS_SECRET);
 		req.email = decoded.email;
-		// req.decoded = decoded
+		req.decoded = decoded;
 		next();
 	} catch (error) {
 		return res.status(401).json({ success: false, msg: error.message });
